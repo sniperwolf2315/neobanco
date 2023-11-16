@@ -1,0 +1,147 @@
+proyecto desarrollado en lenguaje php utilizando las herramientas de laravel en su version 10 al igual que las herramientas de composer para poder utilizar los comandos php artisan
+
+proyecto desarrollado como modelo de prueba tecnica para la empresa INR dentro de su proceso de seleccion de personal y presentado por el el desarrollador carlos villalobos
+
+para poder replicar y realizar su funcionalidad se debe primero instalar php y composer de manera local en el pc  y luego si se puede realizar la clonacion del proyecto desde el repo de github https://github.com/sniperwolf2315/neobanco.git
+
+
+Instalación y Configuración Inicial
+1.	Instalación de Laravel:
+o	Instala Laravel Compuesto Composer:
+•	composer create-project --prefer-dist laravel/laravel neobanco
+  Configuración de la Base de Datos:
+•	Configura la conexión a la base de datos en el archivo .env.
+•	Ejecuta las migraciones para crear las tablas necesarias:
+•	php artisan migrate
+Configuración de Autenticación:
+•	Utilizar el comando Artisan para configurar la autenticación:
+
+o	php artisan make:auth
+
+Esto generará las vistas y controladores necesarios para la autenticación.
+Modelos y Migraciones
+1.	Creación de Modelos:
+o	Crea modelos para Usuario, Cuenta y Transacción:
+•	php artisan make:model User -m
+•	php artisan make:model Account -m
+•	php artisan make:model Transaction -m
+•	Define las relaciones en los modelos correspondientes.
+  Definición de Migraciones:
+•	En las migraciones en el directorio database/migrations, definir la estructura de las tablas.
+•	Ejemplo de migración para la tabla users:
+// users migration
+public function up()
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('email')->unique();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password');
+        $table->rememberToken();
+        $table->timestamps();
+    });
+}  Repite el proceso para las tablas de cuentas (accounts) y transacciones (transactions).
+ Ejecuta las migraciones:
+
+o	php artisan migrate
+
+Controladores y Rutas
+1.	Controladores:
+o	Crea controladores para gestionar la autenticación, la creación de cuentas y procesamiento de transacciones:
+•	php artisan make:controller AuthController
+•	php artisan make:controller AccountController
+•	php artisan make:controller TransactionController
+ Definición de Rutas:
+•	En el archivo routes/web.php, definir las rutas para diferentes funcionalidades:
+o	Route::group(['middleware' => 'auth'], function () {
+o	    // Rutas de cuentas
+o	    Route::get('/accounts', 'AccountController@index');
+o	    Route::post('/accounts/create', 'AccountController@create');
+o	    Route::get('/accounts/{id}', 'AccountController@show');
+o	
+o	    // Rutas de transacciones
+o	    Route::post('/transactions/deposit', 'TransactionController@deposit');
+o	    Route::post('/transactions/withdrawal', 'TransactionController@withdrawal');
+o	});
+Controladores y Vistas
+1.	Implementación de Controladores:
+o	En los controladores correspondientes (AuthController, AccountController, TransactionController), implementa la lógica de las funciones según los requisitos.
+2.	Vistas:
+o	Crea las vistas necesarias en el directorio resources/viewspara mostrar la información al usuario.
+
+
+Paso 1: Creación de la API
+1.	Instalación de Laravel: Si no tiene un proyecto Laravel, puedes con el siguiente comando:
+composer create-project --prefer-dist laravel/laravel neobanco
+ Creación de Modelos y Migraciones: Crea modelos para Usuario, Cuenta y Transacción:
+php artisan make:model User -m
+php artisan make:model Account -m
+php artisan make:model Transaction -mDefine las migraciones en los archivos generados.
+Configuración de la Base de Datos: Configura la conexión a la base de datos en el archivo .env y las migraciones:
+php artisan migrate
+Creación de Controladores: Crea controladores para gestionar la autenticación, la creación de cuentas y procesamiento de transacciones:
+php artisan make:controller AuthController
+php artisan make:controller AccountController
+php artisan make:controller TransactionController
+Definición de Rutas: Definen las rutas en el archivo routes/api.php:
+// routes/api.php
+
+Route::post('register', 'AuthController@register');
+Route::post('login', 'AuthController@login');
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('accounts', 'AccountController@create');
+    Route::get('accounts/{id}', 'AccountController@show');
+    Route::get('transactions/{user_id}', 'TransactionController@index');
+    Route::post('transactions/deposit', 'TransactionController@deposit');
+    Route::post('transactions/withdrawal', 'TransactionController@withdrawal');
+
+})
+
+5.	;Implementación de Controladores: Implementa la lógica en los controladores.
+Paso 2: Manual de Pruebas
+Autenticación de Usuario
+1.	Registro de Usuario:
+o	Punto final: POST /api/register
+o	Parámetros: name, email, password
+curl -X POST -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john@example.com","password":"secret"}' http://localhost:8000/api/register
+Inicio de la Sesión de Usuario:
+•	Punto final: POST /api/login
+•	Parámetros: email, password
+2.	curl -X POST -H "Content-Type: application/json" -d '{"email":"john@example.com","password":"secret"}' http://localhost:8000/api/login
+3.	Obtiene el token de acceso, que se muestra en las posteriores solicitudes.
+Gestión de las Cuentas
+3.	Creación de Cuenta:
+o	Punto final: POST /api/accounts
+o	Encabezado: Authorization: Bearer {TOKEN}
+o	Parámetros: user_id
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer {TOKEN}" -d '{"user_id":1}' http://localhost:8000/api/accounts
+  Ver Detalles de Cuenta:
+•	Punto final: GET /api/accounts/{id}
+•	Encabezado: Authorization: Bearer {TOKEN}
+curl -H "Authorization: Bearer {TOKEN}" http://localhost:8000/api/accounts/1
+
+Procesamiento de Transacciones
+5.	Depósito:
+o	Punto final: POST /api/transactions/deposit
+o	Encabezado: Authorization: Bearer {TOKEN}
+o	Parámetros: account_id, amount
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer {TOKEN}" -d '{"account_id":1,"amount":100}' http://localhost:8000/api/transactions/deposit
+
+ Retiro:
+•	Punto final: POST /api/transactions/withdrawal
+•	Encabezado: Authorization: Bearer {TOKEN}
+•	Parámetros: account_id, amount
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer {TOKEN}" -d '{"account_id":1,"amount":50}' http://localhost:8000/api/transactions/withdrawal
+
+Ver Transacciones:
+•	Punto final: GET /api/transactions/{user_id}
+•	Encabezado: Authorization: Bearer {TOKEN}
+curl -H "Authorization: Bearer {TOKEN}" http://localhost:8000/api/transactions/1
+
+
+
+
+
+
