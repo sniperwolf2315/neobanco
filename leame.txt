@@ -1,0 +1,79 @@
+Instalación y Configuración Inicial
+
+Instalación de Laravel:
+
+    Instala Laravel utilizando Composer:pruebas
+
+Configuración de la Base de Datos:
+
+    Configura la conexión a la base de datos en el archivo .env.
+
+    Ejecuta las migraciones para crear las tablas necesarias: php artisan migrate
+
+Configuración de Autenticación:
+
+    Utiliza el comando Artisan para configurar la autenticación: php artisan make:auth
+
+Creación de Modelos:
+
+    Crea modelos para User, Account y Transaction:
+
+php artisan make:model User -m
+php artisan make:model Account -m
+php artisan make:model Transaction -m
+
+Definición de Migraciones:
+
+    En las migraciones generadas en el directorio database/migrations, define la estructura de las tablas.
+
+    Ejemplo de migración para la tabla users:
+
+// users migration
+public function up()
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('email')->unique();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password');
+        $table->rememberToken();
+        $table->timestamps();
+    });
+}
+
+Repite el proceso para las tablas de cuentas (accounts) y transacciones (transactions).
+
+Ejecuta las migraciones: php artisan migrate
+
+
+Controladores y Rutas
+
+    Controladores:
+
+        Crea controladores para gestionar la autenticación, la creación de cuentas y el procesamiento de transacciones:
+
+php artisan make:controller AuthController
+php artisan make:controller AccountController
+php artisan make:controller TransactionController
+
+Definición de Rutas:
+
+    En el archivo routes/web.php, define las rutas para las diferentes funcionalidades:
+
+Route::group(['middleware' => 'auth'], function () {
+    // Rutas de cuentas
+    Route::get('/accounts', 'AccountController@index');
+    Route::post('/accounts/create', 'AccountController@create');
+    Route::get('/accounts/{id}', 'AccountController@show');
+
+    // Rutas de transacciones
+    Route::post('/transactions/deposit', 'TransactionController@deposit');
+    Route::post('/transactions/withdrawal', 'TransactionController@withdrawal');
+});
+
+
+
+
+
+
